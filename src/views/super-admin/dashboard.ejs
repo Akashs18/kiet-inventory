@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Super Admin Dashboard</title>
+</head>
+<body>
+  <h2>Super Admin Dashboard</h2>
+
+  <nav>
+    <a href="/super-admin/users">Create User</a> |
+    <a href="/inventory-admin/dashboard">Inventory</a> |
+    <a href="/logout">Logout</a>
+  </nav>
+
+  <hr>
+
+  <h3>System Overview</h3>
+  <ul>
+    <li>Total Users: <%= stats.users %></li>
+    <li>Total Products: <%= stats.products %></li>
+    <li>Total Suppliers: <%= stats.suppliers %></li>
+  </ul>
+</body>
+</html>

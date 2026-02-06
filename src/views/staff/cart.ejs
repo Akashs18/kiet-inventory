@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Cart</title>
+</head>
+<body>
+  <h2>My Cart</h2>
+
+  <a href="/staff/dashboard">Back</a>
+  <hr>
+
+  <table border="1" cellpadding="8">
+    <tr>
+      <th>Product</th>
+      <th>Quantity</th>
+      <th>Action</th>
+    </tr>
+
+    <% items.forEach(i => { %>
+      <tr>
+        <td><%= i.name %></td>
+        <td><%= i.quantity %></td>
+        <td>
+  <form method="POST" action="/staff/cart/decrease/<%= i.cart_item_id %>" style="display:inline">
+    <button type="submit">−</button>
+  </form>
+
+  <strong><%= i.quantity %></strong>
+
+  <form method="POST" action="/staff/cart/increase/<%= i.cart_item_id %>" style="display:inline">
+    <button type="submit">+</button>
+  </form>
+
+  <form method="POST" action="/staff/cart/remove/<%= i.cart_item_id %>" style="display:inline">
+    <button type="submit">Remove</button>
+  </form>
+</td>
+
+      </tr>
+    <% }) %>
+  </table>
+
+  <form method="POST" action="/staff/cart/submit">
+    <button>Submit Cart</button>
+  </form>
+
+</body>
+</html>

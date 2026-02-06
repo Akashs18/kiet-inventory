@@ -1,0 +1,76 @@
+
+
+<table>
+  <% products.forEach(p => { %>
+    <tr>
+      <td><%= p.name %></td>
+      <td><%= p.quantity %></td>
+      <td>
+        <form method="POST" action="/staff/cart/add">
+          <input type="hidden" name="product_id" value="<%= p.id %>">
+          <input type="number" name="quantity">
+          <button>Add</button>
+        </form>
+      </td>
+    </tr>
+  <% }) %><!DOCTYPE html>
+<html>
+<head>
+  <title>Staff Dashboard</title>
+</head>
+<body>
+  <h2>Staff Dashboard</h2>
+
+  <nav>
+    <a href="/staff/cart">Cart</a> |
+    <a href="/logout">Logout</a>
+  </nav>
+
+  <hr>
+
+  <!-- SEARCH -->
+  <form method="GET" action="/staff/dashboard">
+    <input name="search" placeholder="Search product" value="<%= search %>">
+    <button>Search</button>
+  </form>
+
+  <!-- PRODUCT TABLE -->
+  <table border="1" cellpadding="8">
+    <tr>
+      <th>Product</th>
+      <th>Available</th>
+      <th>Add</th>
+    </tr>
+
+    <% products.forEach(p => { %>
+      <tr>
+        <td><%= p.name %></td>
+        <td><%= p.quantity %></td>
+        <td>
+          <form method="POST" action="/staff/cart/add">
+            <input type="hidden" name="product_id" value="<%= p.id %>">
+            <input type="number" name="quantity" min="1" required>
+            <button>Add</button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+  </table>
+
+  <!-- PAGINATION -->
+  <div>
+    <% if (page > 1) { %>
+      <a href="?page=<%= page - 1 %>&search=<%= search %>">Prev</a>
+    <% } %>
+
+    Page <%= page %>
+
+    <% if (hasNext) { %>
+      <a href="?page=<%= page + 1 %>&search=<%= search %>">Next</a>
+    <% } %>
+  </div>
+
+</body>
+</html>
+
+</table>

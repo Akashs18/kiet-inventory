@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Products</title>
+</head>
+<body>
+
+<h2>Products</h2>
+
+<a href="/inventory-admin/dashboard">Back</a>
+<a href="/inventory-admin/products/add">Add Product</a>
+
+<table border="1">
+  <tr>
+    <th>Name</th>
+    <th>Quantity</th>
+    <th>Supplier</th>
+  </tr>
+
+  <% products.forEach(p => { %>
+    <tr>
+      <td><%= p.name %></td>
+      <td><%= p.quantity %></td>
+      <td><%= p.supplier %></td>
+    </tr>
+  <% }) %>
+</table>
+
+</body>
+</html>

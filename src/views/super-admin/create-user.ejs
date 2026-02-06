@@ -1,0 +1,15 @@
+<h2>Create User</h2>
+
+<form method="POST" action="/super-admin/users/create">
+  <input name="name" placeholder="Name" required />
+  <input name="email" type="email" placeholder="Email" required />
+  <input name="password" type="password" placeholder="Password" required />
+
+  <select name="role">
+    <option value="staff">Staff</option>
+    <option value="inventory-admin">Inventory Admin</option>
+    <option value="super-admin">Super Admin</option>
+  </select>
+
+  <button type="submit">Create</button>
+</form>

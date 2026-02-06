@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Inventory Admin</title>
+</head>
+<body>
+  <h2>Inventory Admin Dashboard</h2>
+
+  <nav>
+    <a href="/inventory-admin/products">Products</a> |
+    <a href="/inventory-admin/products/add">Add Product</a> |
+    <a href="/inventory-admin/suppliers">Suppliers</a> |
+    <a href="/logout">Logout</a>
+  </nav>
+
+  <hr>
+
+  <h3>Add Product</h3>
+  <form method="POST" action="/inventory-admin/product/add">
+    <input name="name" placeholder="Product Name" required>
+    <input name="quantity" type="number" placeholder="Quantity" required>
+    <input name="supplier_id" placeholder="Supplier ID" required>
+    <button>Add</button>
+  </form>
+</body>
+</html>

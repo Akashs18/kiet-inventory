@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Product</title>
+</head>
+<body>
+
+<h2>Add Product</h2>
+
+<form method="POST" action="/inventory-admin/product/add">
+  <input name="name" placeholder="Product Name" required />
+  <input type="number" name="quantity" placeholder="Quantity" required />
+
+  <select name="supplier_id" required>
+    <% suppliers.forEach(s => { %>
+      <option value="<%= s.id %>"><%= s.name %></option>
+    <% }) %>
+  </select>
+
+  <button type="submit">Save</button>
+</form>
+
+</body>
+</html>

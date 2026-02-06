@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Supplier</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    form {
+      max-width: 400px;
+    }
+    input, textarea, button {
+      display: block;
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    a.button {
+      display: inline-block;
+      margin-bottom: 15px;
+      padding: 8px 12px;
+      background: #28a745;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Add Supplier</h2>
+
+  <a href="/inventory-admin/suppliers" class="button">Back to Suppliers</a>
+
+  <form method="POST" action="/inventory-admin/supplier/add">
+    <input type="text" name="name" placeholder="Supplier Name" required />
+    <input type="text" name="contact" placeholder="Contact Info" required />
+    <textarea name="address" placeholder="Address" rows="3" required></textarea>
+
+    <button type="submit">Add Supplier</button>
+  </form>
+</body>
+</html>

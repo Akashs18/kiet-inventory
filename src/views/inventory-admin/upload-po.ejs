@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Upload PO</title>
+</head>
+<body>
+
+<h2>Upload Purchase Order</h2>
+
+<nav>
+  <a href="/inventory-admin/dashboard">Dashboard</a> |
+  <a href="/logout">Logout</a>
+</nav>
+
+<hr>
+
+<form method="POST" action="/inventory-admin/po/upload" enctype="multipart/form-data">
+  <input type="text" name="supplier_id" placeholder="Supplier ID" required>
+  <input type="file" name="po" accept=".pdf,.jpg,.png" required>
+  <button>Upload</button>
+</form>
+
+</body>
+</html>
