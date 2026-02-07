@@ -1,15 +1,129 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>My Cart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f6f8;
+      padding: 40px 20px;
+      color: #333;
+    }
+
+    h2 {
+      color: #5563DE;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    a.back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      text-decoration: none;
+      color: #5563DE;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+
+    a.back-link:hover {
+      color: #3b46b1;
+      text-decoration: underline;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 15px;
+      text-align: center;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    th {
+      background: #5563DE;
+      color: white;
+      font-size: 16px;
+    }
+
+    tr:hover {
+      background: #f1f3f6;
+    }
+
+    button {
+      padding: 6px 12px;
+      margin: 0 2px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .decrease {
+      background: #f0ad4e;
+      color: white;
+    }
+
+    .increase {
+      background: #5cb85c;
+      color: white;
+    }
+
+    .remove {
+      background: #d9534f;
+      color: white;
+    }
+
+    .submit-cart {
+      margin-top: 20px;
+      background: #5563DE;
+      color: white;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      width: 100%;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .submit-cart:hover {
+      background: #3b46b1;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 600px) {
+      th, td {
+        padding: 10px;
+      }
+
+      button {
+        padding: 4px 8px;
+        font-size: 14px;
+      }
+    }
+  </style>
 </head>
 <body>
+
   <h2>My Cart</h2>
 
-  <a href="/staff/dashboard">Back</a>
+  <a href="/staff/dashboard" class="back-link">← Back to Dashboard</a>
   <hr>
 
-  <table border="1" cellpadding="8">
+  <table>
     <tr>
       <th>Product</th>
       <th>Quantity</th>
@@ -21,27 +135,26 @@
         <td><%= i.name %></td>
         <td><%= i.quantity %></td>
         <td>
-  <form method="POST" action="/staff/cart/decrease/<%= i.cart_item_id %>" style="display:inline">
-    <button type="submit">−</button>
-  </form>
+          <form method="POST" action="/staff/cart/decrease/<%= i.cart_item_id %>" style="display:inline">
+            <button type="submit" class="decrease">−</button>
+          </form>
 
-  <strong><%= i.quantity %></strong>
+          <strong><%= i.quantity %></strong>
 
-  <form method="POST" action="/staff/cart/increase/<%= i.cart_item_id %>" style="display:inline">
-    <button type="submit">+</button>
-  </form>
+          <form method="POST" action="/staff/cart/increase/<%= i.cart_item_id %>" style="display:inline">
+            <button type="submit" class="increase">+</button>
+          </form>
 
-  <form method="POST" action="/staff/cart/remove/<%= i.cart_item_id %>" style="display:inline">
-    <button type="submit">Remove</button>
-  </form>
-</td>
-
+          <form method="POST" action="/staff/cart/remove/<%= i.cart_item_id %>" style="display:inline">
+            <button type="submit" class="remove">Remove</button>
+          </form>
+        </td>
       </tr>
     <% }) %>
   </table>
 
   <form method="POST" action="/staff/cart/submit">
-    <button>Submit Cart</button>
+    <button class="submit-cart" type="submit">Submit Cart</button>
   </form>
 
 </body>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pending Orders | Inventory Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    /* Reset & global */
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background: #f4f6f8; display: flex; min-height: 100vh; color: #333; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background: #5563DE;
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      color: white;
+    }
+    .sidebar a { color: white; text-decoration: none; font-weight: bold; padding: 10px 12px; border-radius: 6px; transition: background 0.3s, padding 0.3s; }
+    .sidebar a:hover { background: #3b46b1; padding-left: 16px; }
+
+    /* Main content */
+    .main-content { flex: 1; padding: 40px 30px; }
+    h2 { color: #5563DE; margin-bottom: 20px; }
+
+    /* Order card */
+    .order-card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 20px; }
+    .order-card h3 { margin-bottom: 15px; color: #333; }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+    th, td { padding: 10px 12px; border: 1px solid #ccc; text-align: left; }
+    th { background: #5563DE; color: white; }
+    tr:nth-child(even) { background: #f8f9fa; }
+
+    /* Buttons */
+    button { padding: 10px 15px; background: #28a745; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: background 0.3s, transform 0.2s; }
+    button:hover { background: #218838; transform: translateY(-1px); }
+
+    /* No orders message */
+    .no-orders { font-style: italic; color: #555; }
+
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      .sidebar { width: 100%; flex-direction: row; justify-content: space-around; padding: 20px 0; }
+      .main-content { padding: 20px; }
+      table { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <a href="/inventory-admin/dashboard">Dashboard</a>
+    <a href="/inventory-admin/products">Products</a>
+    <a href="/inventory-admin/products/add">Add Product</a>
+    <a href="/inventory-admin/suppliers">Suppliers</a>
+    <a href="/logout">Logout</a>
+  </div>
+
+  <!-- Main content -->
+  <div class="main-content">
+    <h2>Pending Orders</h2>
+
+    <% if (orders.length === 0) { %>
+      <p class="no-orders">No pending orders</p>
+    <% } %>
+
+    <% orders.forEach(order => { %>
+      <div class="order-card">
+        <h3>Cart ID: <%= order.cart_id %> | Staff: <%= order.staff_name %></h3>
+        <table>
+          <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+          </tr>
+          <% order.items.forEach(item => { %>
+            <tr>
+              <td><%= item.product_name %></td>
+              <td><%= item.quantity %></td>
+            </tr>
+          <% }) %>
+        </table>
+        <form method="POST" action="/inventory-admin/order/receive/<%= order.cart_id %>">
+          <button type="submit">Receive Order & Send Indent</button>
+        </form>
+      </div>
+    <% }) %>
+  </div>
+
+</body>
+</html>

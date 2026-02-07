@@ -1,8 +1,10 @@
 import nodemailer from "nodemailer";
 
-export const sendMail = async (to, subject, html) => {
+export const sendMail = async (to, subject, html, attachments = []) => {
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
     auth: {
       user: process.env.MAIL_USER,
       pass: process.env.MAIL_PASS
@@ -10,9 +12,10 @@ export const sendMail = async (to, subject, html) => {
   });
 
   await transporter.sendMail({
-    from: process.env.MAIL_USER,
+    from: `"Inventory System" <${process.env.MAIL_USER}>`,
     to,
     subject,
-    html
+    html,
+    attachments
   });
 };

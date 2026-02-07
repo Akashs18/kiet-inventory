@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Order History | Inventory Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f4f6f8;
+      padding: 30px;
+      color: #333;
+    }
+
+    h2 {
+      color: #5563DE;
+      margin-bottom: 20px;
+    }
+
+    .empty {
+      font-style: italic;
+      color: #555;
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+
+    .order-card {
+      background: #fff;
+      padding: 20px;
+      margin-bottom: 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+    }
+
+    .order-header {
+      margin-bottom: 15px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .order-header span {
+      color: #5563DE;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+    }
+
+    th {
+      background: #5563DE;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background: #f8f9fa;
+    }
+
+    tr:hover {
+      background: #e2e6ea;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #ddd;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 15px;
+      }
+      table {
+        font-size: 14px;
+      }
+      .order-header {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Order History</h2>
+
+  <% if (orders.length === 0) { %>
+    <div class="empty">No completed orders</div>
+  <% } %>
+
+  <% orders.forEach(order => { %>
+    <div class="order-card">
+      <div class="order-header">
+        Order #<span><%= order.cart_id %></span> |
+        Staff: <span><%= order.staff_name %></span> |
+        Date: <span><%= order.created_at.toLocaleString() %></span>
+      </div>
+
+      <table>
+        <tr>
+          <th>Product</th>
+          <th>Quantity</th>
+        </tr>
+
+        <% order.items.forEach(item => { %>
+          <tr>
+            <td><%= item.product_name %></td>
+            <td><%= item.quantity %></td>
+          </tr>
+        <% }) %>
+      </table>
+    </div>
+  <% }) %>
+
+</body>
+</html>

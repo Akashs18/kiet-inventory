@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Order History</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f4f6f8;
+      padding: 30px;
+      color: #333;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #5563DE;
+    }
+
+    a.back {
+      display: inline-block;
+      margin-bottom: 20px;
+      text-decoration: none;
+      color: white;
+      background: #5563DE;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+
+    a.back:hover {
+      background: #3b46b1;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+
+    th, td {
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #5563DE;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background: #f8f9fa;
+    }
+
+    tr:hover {
+      background: #e2e6ea;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    li {
+      margin-bottom: 4px;
+    }
+
+    .status {
+      font-weight: bold;
+      text-transform: capitalize;
+    }
+
+    .status.pending { color: #ffc107; }
+    .status.received { color: #28a745; }
+    .status.rejected { color: #dc3545; }
+
+    .empty {
+      font-style: italic;
+      color: #555;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 15px;
+      }
+      table {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>My Order History</h2>
+
+  <a href="/staff/dashboard" class="back">← Back to Dashboard</a>
+
+  <% if (orders.length === 0) { %>
+    <div class="empty">You haven’t placed any orders yet.</div>
+  <% } else { %>
+    <table>
+      <tr>
+        <th>Order ID</th>
+        <th>Status</th>
+        <th>Created At</th>
+        <th>Updated At</th>
+        <th>Products</th>
+      </tr>
+
+      <% orders.forEach(order => { %>
+        <tr>
+  <td><%= order.cart_id %></td>
+
+            <td>
+                <span class="status <%= order.status %>">
+                <%= order.status %>
+                </span>
+            </td>
+
+            <td><%= order.created_at.toLocaleString() %></td>
+
+            <td>
+                <%= order.updated_at ? order.updated_at.toLocaleString() : 'N/A' %>
+            </td>
+
+            <td>
+                <ul>
+                <% order.items.forEach(i => { %>
+                    <li><%= i.name %> × <%= i.quantity %></li>
+                <% }) %>
+                </ul>
+            </td>
+            </tr>
+
+      <% }) %>
+    </table>
+  <% } %>
+
+</body>
+</html>

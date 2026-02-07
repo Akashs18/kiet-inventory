@@ -5,7 +5,9 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "node --watch src/server.js"
+    "dev": "node --watch src/server.js",
+    "build:css": "tailwindcss -i ./src/public/css/tailwind.css -o ./src/public/css/style.css --watch",
+    "tailwind:init": "tailwindcss init"
   },
   "author": "",
   "license": "ISC",
@@ -19,6 +21,12 @@
     "multer": "^2.0.2",
     "nodemailer": "^8.0.0",
     "path": "^0.12.7",
+    "pdfkit": "^0.17.2",
     "pg": "^8.18.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.24",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.18"
   }
 }

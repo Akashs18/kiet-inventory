@@ -1,5 +1,7 @@
 import  pool  from "../db/pool.js";
 import { sendMail } from "../utils/mailer.js";
+import { generateIndentPDF } from "../utils/indentPdf.js";
+import { generateIndentNumber } from "../utils/indentNumber.js";
 
 /* ---------- DASHBOARD ---------- */
 export const dashboard = async (req, res) => {
@@ -46,31 +48,98 @@ export const uploadPO = async (req, res) => {
 export const receiveOrder = async (req, res) => {
   const { cart_id } = req.params;
 
-  const items = await pool.query(`
-    SELECT ci.quantity, ci.product_id, u.email
+  // Get cart items and staff email
+  const itemsResult = await pool.query(`
+    SELECT 
+      ci.quantity,
+      p.id AS product_id,
+      p.name AS product_name,
+      u.email,
+      u.name AS staff_name
     FROM cart_items ci
     JOIN carts c ON ci.cart_id = c.id
+    JOIN products p ON ci.product_id = p.id
     JOIN users u ON c.staff_id = u.id
     WHERE c.id=$1
   `, [cart_id]);
 
-  for (const item of items.rows) {
+  const items = itemsResult.rows;
+
+   // 🔢 Generate indent number
+  const indentNo = await generateIndentNumber(pool);
+
+  // Update stock
+  for (const item of items) {
     await pool.query(
       "UPDATE products SET quantity = quantity - $1 WHERE id=$2",
       [item.quantity, item.product_id]
     );
   }
 
+  // Mark cart as received
   await pool.query(
-    "UPDATE carts SET status='received' WHERE id=$1",
-    [cart_id]
+    "UPDATE carts SET status='received', indent_no=$1, received_at=NOW() WHERE id=$2",
+    [indentNo, cart_id]
   );
+
+   // Generate PDF
+  const pdfPath = await generateIndentPDF(
+    {
+      cart_id,
+        indent_no: indentNo,
+      staff_name: items[0].staff_name
+    },
+    items
+  );
+
+  // Send indent email to staff
+  const staffEmail = items[0].email;
+  const productList = items.map(i => `${i.product_name} - ${i.quantity}`).join("<br>");
+  `Indent Letter - ${indentNo}`;
+  const emailContent = `
+    <p>Dear Staff,</p>
+    <p>Your indent <b>${indentNo}</b> request has been processed. Here is the list of products you received:</p>
+    <p>${productList}</p>
+     <p>Please find the attached indent letter.</p>
+    <p>Regards,<br>Inventory Team</p>
+  `;
 
   await sendMail(
-    [items.rows[0].email, process.env.MAIL_USER],
-    "Indent Received",
-    "<p>Your indent has been received successfully.</p>"
+    [staffEmail],
+    "Indent Processed",
+    emailContent,
+    [{filename: `${indentNo}.pdf`,
+        path: pdfPath}]
+    
   );
 
-  res.redirect("/inventory-admin/dashboard");
+  res.redirect("/inventory-admin/orders/pending");
 };
+
+export const orders = async (req, res) => {
+  const result = await pool.query(`
+    SELECT c.id AS cart_id, u.name AS staff_name, c.status, c.created_at, c.updated_at,
+           p.name AS product_name, ci.quantity
+    FROM carts c
+    JOIN users u ON u.id = c.staff_id
+    JOIN cart_items ci ON ci.cart_id = c.id
+    JOIN products p ON ci.product_id = p.id
+    WHERE c.status != 'pending'
+    ORDER BY c.created_at DESC
+  `);
+
+  const grouped = {};
+  result.rows.forEach(row => {
+    if (!grouped[row.cart_id]) grouped[row.cart_id] = {
+      staff_name: row.staff_name,
+      status: row.status,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+      items: []
+    };
+    grouped[row.cart_id].items.push({ name: row.product_name, quantity: row.quantity });
+  });
+
+  res.render("inventory-admin/orders", { orders: Object.values(grouped) });
+};
+

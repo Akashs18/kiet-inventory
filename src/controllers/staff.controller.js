@@ -171,3 +171,32 @@ export const decreaseQty = async (req, res) => {
 
   res.redirect("/staff/cart");
 };
+
+export const orderHistory = async (req, res) => {
+  const staffId = req.session.user.id;
+
+  const orders = await pool.query(`
+    SELECT c.id AS cart_id, c.status, c.created_at, 
+           p.name AS product_name, ci.quantity
+    FROM carts c
+    JOIN cart_items ci ON ci.cart_id = c.id
+    JOIN products p ON ci.product_id = p.id
+    WHERE c.staff_id = $1 AND c.status != 'pending'
+    ORDER BY c.created_at DESC
+  `, [staffId]);
+
+  // Group products by cart
+  const grouped = {};
+  orders.rows.forEach(row => {
+    if (!grouped[row.cart_id]) grouped[row.cart_id] = { 
+      status: row.status,
+      created_at: row.created_at,
+      
+      items: []
+    };
+    grouped[row.cart_id].items.push({ name: row.product_name, quantity: row.quantity });
+  });
+
+  res.render("staff/order-history", { orders: Object.values(grouped) });
+};
+

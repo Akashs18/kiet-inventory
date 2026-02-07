@@ -1,54 +1,124 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Add Supplier</title>
+  <meta charset="UTF-8">
+  <title>Add Supplier | Inventory Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
+    /* Reset and global styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 50px 20px;
+      color: #333;
     }
-    form {
-      max-width: 400px;
+
+    .form-container {
+      background: #fff;
+      padding: 40px 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      width: 450px;
+      transition: transform 0.3s, box-shadow 0.3s;
     }
-    input, textarea, button {
-      display: block;
-      width: 100%;
-      margin-bottom: 15px;
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
+
+    .form-container:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.15);
     }
-    button {
-      background: #007bff;
-      color: white;
-      border: none;
-      cursor: pointer;
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #5563DE;
+      font-size: 26px;
     }
-    button:hover {
-      background: #0056b3;
-    }
-    a.button {
+
+    a.button-back {
       display: inline-block;
-      margin-bottom: 15px;
-      padding: 8px 12px;
+      margin-bottom: 20px;
+      padding: 10px 15px;
       background: #28a745;
       color: white;
       text-decoration: none;
-      border-radius: 4px;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    a.button-back:hover {
+      background: #218838;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    input, textarea {
+      padding: 12px 15px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      width: 100%;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #5563DE;
+      box-shadow: 0 0 8px rgba(85, 99, 222, 0.3);
+      outline: none;
+    }
+
+    button {
+      padding: 12px;
+      background: #5563DE;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background: #3b46b1;
+      transform: translateY(-2px);
+    }
+
+    textarea {
+      resize: vertical;
     }
   </style>
 </head>
 <body>
-  <h2>Add Supplier</h2>
 
-  <a href="/inventory-admin/suppliers" class="button">Back to Suppliers</a>
+  <div class="form-container">
+    <h2>Add Supplier</h2>
 
-  <form method="POST" action="/inventory-admin/supplier/add">
-    <input type="text" name="name" placeholder="Supplier Name" required />
-    <input type="text" name="contact" placeholder="Contact Info" required />
-    <textarea name="address" placeholder="Address" rows="3" required></textarea>
+    <a href="/inventory-admin/suppliers" class="button-back">← Back to Suppliers</a>
 
-    <button type="submit">Add Supplier</button>
-  </form>
+    <form method="POST" action="/inventory-admin/supplier/add">
+      <input type="text" name="name" placeholder="Supplier Name" required />
+      <input type="text" name="contact" placeholder="Contact Info" required />
+      <textarea name="address" placeholder="Address" rows="3" required></textarea>
+
+      <button type="submit">Add Supplier</button>
+    </form>
+  </div>
+
 </body>
 </html>

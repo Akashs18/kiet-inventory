@@ -1,15 +1,108 @@
-<h2>Create User</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create User | Super Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<form method="POST" action="/super-admin/users/create">
-  <input name="name" placeholder="Name" required />
-  <input name="email" type="email" placeholder="Email" required />
-  <input name="password" type="password" placeholder="Password" required />
+  <style>
+    /* Reset and global styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-  <select name="role">
-    <option value="staff">Staff</option>
-    <option value="inventory-admin">Inventory Admin</option>
-    <option value="super-admin">Super Admin</option>
-  </select>
+    body {
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 50px 20px;
+      color: #333;
+    }
 
-  <button type="submit">Create</button>
-</form>
+    .form-container {
+      background: #fff;
+      padding: 40px 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      width: 400px;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .form-container:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #5563DE;
+      font-size: 26px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    input, select {
+      padding: 12px 15px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    input:focus, select:focus {
+      border-color: #5563DE;
+      box-shadow: 0 0 8px rgba(85, 99, 222, 0.3);
+      outline: none;
+    }
+
+    button {
+      padding: 12px;
+      background: #5563DE;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background: #3b46b1;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="form-container">
+    <h2>Create User</h2>
+
+    <form method="POST" action="/super-admin/users/create">
+      <input name="name" placeholder="Name" required />
+      <input name="email" type="email" placeholder="Email" required />
+      <input name="password" type="password" placeholder="Password" required />
+
+      <select name="role" required>
+        <option value="">Select Role</option>
+        <option value="staff">Staff</option>
+        <option value="inventory-admin">Inventory Admin</option>
+        <option value="super-admin">Super Admin</option>
+      </select>
+
+      <button type="submit">Create</button>
+    </form>
+  </div>
+
+</body>
+</html>

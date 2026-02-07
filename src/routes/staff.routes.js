@@ -6,7 +6,8 @@ import {
   submitCart,
  removeFromCart,
  increaseQty,
- decreaseQty
+ decreaseQty,
+ orderHistory
 } from "../controllers/staff.controller.js";
 
 import { isAuth } from "../middleware/auth.js";
@@ -68,5 +69,13 @@ router.post(
   allow("staff"),
   decreaseQty
 );
+
+// order history
+router.get(
+    "/orders", 
+     isAuth,
+     orderHistory
+);
+
 
 export default router;
