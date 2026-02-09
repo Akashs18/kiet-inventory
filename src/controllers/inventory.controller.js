@@ -5,7 +5,20 @@ import { generateIndentNumber } from "../utils/indentNumber.js";
 
 /* ---------- DASHBOARD ---------- */
 export const dashboard = async (req, res) => {
-  res.render("inventory-admin/dashboard");
+    
+  const products = await pool.query("SELECT COUNT(*) FROM products");
+  const suppliers = await pool.query("SELECT COUNT(*) FROM suppliers"); 
+   const pendingOrders = await pool.query(
+    "SELECT COUNT(*) FROM carts WHERE status = 'pending'"
+  ); 
+  res.render("inventory-admin/dashboard", {
+    stats: {
+      
+      products: products.rows[0].count,
+      suppliers: suppliers.rows[0].count,
+      pendingOrders: pendingOrders.rows[0].count
+    }
+  });
 };
 
 /* ---------- PRODUCTS ---------- */
@@ -24,13 +37,31 @@ export const addProduct = async (req, res) => {
 export const addSupplier = async (req, res) => {
   const { name, contact, address } = req.body;
 
+  // Check if supplier with same name or contact exists
+  const existing = await pool.query(
+    "SELECT * FROM suppliers WHERE name = $1 OR contact = $2",
+    [name, contact]
+  );
+
+  if (existing.rows.length > 0) {
+    // Supplier exists → redirect back with an error message
+    return res.render("inventory-admin/add-supplier", {
+      error: "Supplier with this name or contact already exists.",
+      name,
+      contact,
+      address
+    });
+  }
+
+  // Insert new supplier
   await pool.query(
-    "INSERT INTO suppliers (name,contact,address) VALUES ($1,$2,$3)",
+    "INSERT INTO suppliers (name, contact, address) VALUES ($1, $2, $3)",
     [name, contact, address]
   );
 
-  res.redirect("/inventory-admin/dashboard");
+  res.redirect("/inventory-admin/suppliers");
 };
+
 
 /* ---------- PO UPLOAD ---------- */
 export const uploadPO = async (req, res) => {

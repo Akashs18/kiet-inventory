@@ -134,8 +134,7 @@
   <!-- Sidebar -->
   <div class="sidebar">
     <a href="/inventory-admin/dashboard">Dashboard</a>
-    <a href="/inventory-admin/products">Products</a>
-    <a href="/inventory-admin/products/add">Add Product</a>
+    
     <a href="/inventory-admin/suppliers">Suppliers</a>
     <a href="/logout">Logout</a>
   </div>
@@ -143,6 +142,24 @@
   <!-- Main content -->
   <div class="main-content">
     <h2>Suppliers</h2>
+
+    <form method="GET" style="margin-bottom: 20px;">
+  <input
+    type="text"
+    name="q"
+    placeholder="Search by ID, name, contact, or address..."
+    value="<%= query || '' %>"
+    style="
+      width: 100%;
+      max-width: 400px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    "
+  />
+</form>
+
 
     <a href="/inventory-admin/suppliers/add" class="button add">+ Add Supplier</a>
     <a href="/inventory-admin/dashboard" class="button dashboard">Dashboard</a>

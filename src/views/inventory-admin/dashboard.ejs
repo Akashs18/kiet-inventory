@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    /* Reset and global styles */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -21,24 +20,31 @@
       color: #333;
     }
 
-    /* Sidebar navigation */
+    /* Sidebar */
     .sidebar {
-      width: 220px;
+      width: 230px;
       background: #5563DE;
       padding: 30px 20px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 15px;
       color: white;
+    }
+
+    .sidebar h3 {
+      margin-bottom: 15px;
+      text-align: center;
+      font-size: 18px;
+      letter-spacing: 1px;
     }
 
     .sidebar a {
       color: white;
       text-decoration: none;
       font-weight: bold;
-      transition: background 0.3s, padding 0.3s;
       padding: 10px 12px;
       border-radius: 6px;
+      transition: background 0.3s, padding-left 0.3s;
     }
 
     .sidebar a:hover {
@@ -46,7 +52,13 @@
       padding-left: 16px;
     }
 
-    /* Main content area */
+    .sidebar hr {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.3);
+      margin: 10px 0;
+    }
+
+    /* Main content */
     .main-content {
       flex: 1;
       padding: 40px 30px;
@@ -54,64 +66,59 @@
 
     h2 {
       color: #5563DE;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
     }
 
-    h3 {
-      margin-bottom: 20px;
+    /* Stats cards */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+      max-width: 800px;
     }
 
-    form {
-      background: #fff;
+    .card {
+      background: white;
       padding: 30px;
       border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-      max-width: 500px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      transition: transform 0.3s, box-shadow 0.3s;
+      text-align: center;
     }
 
-    input {
-      padding: 12px 15px;
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.15);
+    }
+
+    .card h4 {
       font-size: 16px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      transition: border-color 0.3s, box-shadow 0.3s;
+      color: #666;
+      margin-bottom: 10px;
     }
 
-    input:focus {
-      border-color: #5563DE;
-      box-shadow: 0 0 8px rgba(85, 99, 222, 0.3);
-      outline: none;
-    }
-
-    button {
-      padding: 12px;
-      background: #5563DE;
-      color: white;
-      font-size: 18px;
+    .card p {
+      font-size: 32px;
       font-weight: bold;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.2s;
-    }
-
-    button:hover {
-      background: #3b46b1;
-      transform: translateY(-2px);
+      color: #5563DE;
     }
 
     @media (max-width: 768px) {
       body {
         flex-direction: column;
       }
+
       .sidebar {
         width: 100%;
         flex-direction: row;
         justify-content: space-around;
+        align-items: center;
       }
+
+      .sidebar h3 {
+        display: none;
+      }
+
       .main-content {
         padding: 20px;
       }
@@ -120,35 +127,44 @@
 </head>
 <body>
 
-  
   <!-- Sidebar -->
-<div class="sidebar">
-  <a href="/inventory-admin/products">Products</a>
-  <a href="/inventory-admin/products/add">Add Product</a>
-  <a href="/inventory-admin/suppliers">Suppliers</a>
+  <div class="sidebar">
+    <h3>INVENTORY</h3>
 
-  <hr>
+    <a href="/inventory-admin/products">Products</a>
+    <a href="/inventory-admin/suppliers">Suppliers</a>
 
-  <a href="/inventory-admin/orders/pending">Pending Orders</a>
-  <a href="/inventory-admin/orders/history">Order History</a>
+    <hr>
 
-  <hr>
+    <a href="/inventory-admin/orders/pending">Pending Orders</a>
+    <a href="/inventory-admin/orders/history">Order History</a>
 
-  <a href="/logout">Logout</a>
-</div>
+    <hr>
 
+    <a href="/logout">Logout</a>
+  </div>
 
   <!-- Main content -->
   <div class="main-content">
     <h2>Inventory Admin Dashboard</h2>
 
-    <h3>Add Product</h3>
-    <form method="POST" action="/inventory-admin/product/add">
-      <input name="name" placeholder="Product Name" required>
-      <input name="quantity" type="number" placeholder="Quantity" min="1" required>
-      <input name="supplier_id" placeholder="Supplier ID" required>
-      <button type="submit">Add</button>
-    </form>
+    <div class="stats">
+      <div class="card">
+        <h4>Total Products</h4>
+        <p><%= stats.products %></p>
+      </div>
+
+      <div class="card">
+        <h4>Total Suppliers</h4>
+        <p><%= stats.suppliers %></p>
+      </div>
+
+      <div class="card">
+        <h4>Pending Orders</h4>
+        <p><%= stats.pendingOrders %></p>
+      </div>
+
+    </div>
   </div>
 
 </body>

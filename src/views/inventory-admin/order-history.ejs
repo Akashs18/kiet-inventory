@@ -96,6 +96,24 @@
 
   <h2>Order History</h2>
 
+  <form method="GET" action="/inventory-admin/orders/history" style="margin-bottom: 25px;">
+  <input
+    type="text"
+    name="q"
+    placeholder="Search by order #, staff, or product..."
+    value="<%= typeof query !== 'undefined' ? query : '' %>"
+    style="
+      width: 100%;
+      max-width: 400px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    "
+  />
+</form>
+
+
   <% if (orders.length === 0) { %>
     <div class="empty">No completed orders</div>
   <% } %>

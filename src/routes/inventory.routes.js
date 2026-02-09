@@ -113,9 +113,29 @@ router.get(
   isAuth,
   allow("inventory-admin", "super-admin"),
   async (req, res) => {
-    const result = await pool.query("SELECT * FROM suppliers ORDER BY id DESC");
+
+    const search = req.query.q || "";
+
+    const result = await pool.query(`
+       SELECT *
+  FROM suppliers
+  WHERE (
+    -- Exact match on ID only if numeric
+    ($1 ~ '^[0-9]+$' AND id = $1::int)
+    -- Text search on name, contact, address
+    OR name ILIKE $2
+    OR CAST(contact AS TEXT) ILIKE $2
+    OR address ILIKE $2
+  )
+  ORDER BY id DESC
+    `,[
+      search,          // $1 exact ID match
+      `%${search}%`    // $2 text search
+    ]);
     res.render("inventory-admin/suppliers", {
-      suppliers: result.rows
+      suppliers: result.rows,
+      query: search
+
     });
   }
 );
@@ -260,8 +280,11 @@ router.get(
   isAuth,
   allow("inventory-admin"),
   async (req, res) => {
+
+    const search = req.query.q || ""; 
+
     const result = await pool.query(`
-      SELECT 
+       SELECT 
         c.id AS cart_id,
         u.name AS staff_name,
         c.created_at,
@@ -272,8 +295,13 @@ router.get(
       JOIN cart_items ci ON ci.cart_id = c.id
       JOIN products p ON ci.product_id = p.id
       WHERE c.status = 'received'
+        AND (
+          CAST(c.id AS TEXT) ILIKE $1
+          OR u.name ILIKE $1
+          OR p.name ILIKE $1
+        )
       ORDER BY c.created_at DESC
-    `);
+    `, [`%${search}%`]);
 
     const orders = {};
     result.rows.forEach(row => {
@@ -292,7 +320,8 @@ router.get(
     });
 
     res.render("inventory-admin/order-history", {
-      orders: Object.values(orders)
+      orders: Object.values(orders),
+      query: search
     });
   }
 );

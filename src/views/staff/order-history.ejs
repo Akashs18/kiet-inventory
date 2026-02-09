@@ -109,6 +109,24 @@
 
   <a href="/staff/dashboard" class="back">← Back to Dashboard</a>
 
+  <form method="GET" style="margin-bottom: 20px;">
+  <input
+    type="text"
+    name="q"
+    placeholder="Search by order ID, status, or product..."
+    value="<%= query || '' %>"
+    style="
+      width: 100%;
+      max-width: 400px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    "
+  />
+</form>
+
+
   <% if (orders.length === 0) { %>
     <div class="empty">You haven’t placed any orders yet.</div>
   <% } else { %>

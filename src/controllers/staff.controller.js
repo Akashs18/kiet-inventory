@@ -172,23 +172,40 @@ export const decreaseQty = async (req, res) => {
   res.redirect("/staff/cart");
 };
 
+//order history
 export const orderHistory = async (req, res) => {
   const staffId = req.session.user.id;
+  const search = req.query.q || "";
+
 
   const orders = await pool.query(`
-    SELECT c.id AS cart_id, c.status, c.created_at, 
-           p.name AS product_name, ci.quantity
+    SELECT 
+      c.id AS cart_id,
+      c.status,
+      c.created_at,
+      p.name AS product_name,
+      ci.quantity
     FROM carts c
     JOIN cart_items ci ON ci.cart_id = c.id
     JOIN products p ON ci.product_id = p.id
-    WHERE c.staff_id = $1 AND c.status != 'pending'
+    WHERE c.staff_id = $1
+      AND c.status != 'pending'
+      AND (
+       c.id = CASE 
+        WHEN $2 ~ '^[0-9]+$' THEN $2::int
+        ELSE -1
+      END
+      OR c.status ILIKE $3
+      OR p.name ILIKE $3
+      )
     ORDER BY c.created_at DESC
-  `, [staffId]);
+  `, [staffId, search, `%${search}%`]);
 
   // Group products by cart
   const grouped = {};
   orders.rows.forEach(row => {
     if (!grouped[row.cart_id]) grouped[row.cart_id] = { 
+      cart_id: row.cart_id,
       status: row.status,
       created_at: row.created_at,
       
@@ -197,6 +214,6 @@ export const orderHistory = async (req, res) => {
     grouped[row.cart_id].items.push({ name: row.product_name, quantity: row.quantity });
   });
 
-  res.render("staff/order-history", { orders: Object.values(grouped) });
+  res.render("staff/order-history", { orders: Object.values(grouped),query: req.query.q || "" });
 };
 

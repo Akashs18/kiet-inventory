@@ -104,6 +104,38 @@
       transform: translateY(-2px);
     }
 
+    .empty-cart {
+      background: #fff;
+      padding: 40px;
+      text-align: center;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .empty-cart h3 {
+      color: #5563DE;
+      margin-bottom: 10px;
+    }
+
+    .empty-cart p {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .empty-cart a {
+      display: inline-block;
+      padding: 10px 18px;
+      background: #5563DE;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+
+    .empty-cart a:hover {
+      background: #3b46b1;
+    }
+
     @media (max-width: 600px) {
       th, td {
         padding: 10px;
@@ -118,44 +150,58 @@
 </head>
 <body>
 
-  <h2>My Cart</h2>
+  <h2>🛒 My Cart</h2>
 
   <a href="/staff/dashboard" class="back-link">← Back to Dashboard</a>
   <hr>
 
-  <table>
-    <tr>
-      <th>Product</th>
-      <th>Quantity</th>
-      <th>Action</th>
-    </tr>
+  <% if (items.length === 0) { %>
 
-    <% items.forEach(i => { %>
+    <!-- EMPTY CART -->
+    <div class="empty-cart">
+      <h3>📦 Your cart is empty</h3>
+      <p>Add products to your cart before submitting an indent.</p>
+      <a href="/staff/dashboard">➕ Add Products</a>
+    </div>
+
+  <% } else { %>
+
+    <!-- CART ITEMS -->
+    <table>
       <tr>
-        <td><%= i.name %></td>
-        <td><%= i.quantity %></td>
-        <td>
-          <form method="POST" action="/staff/cart/decrease/<%= i.cart_item_id %>" style="display:inline">
-            <button type="submit" class="decrease">−</button>
-          </form>
-
-          <strong><%= i.quantity %></strong>
-
-          <form method="POST" action="/staff/cart/increase/<%= i.cart_item_id %>" style="display:inline">
-            <button type="submit" class="increase">+</button>
-          </form>
-
-          <form method="POST" action="/staff/cart/remove/<%= i.cart_item_id %>" style="display:inline">
-            <button type="submit" class="remove">Remove</button>
-          </form>
-        </td>
+        <th>Product</th>
+        <th>Quantity</th>
+        <th>Action</th>
       </tr>
-    <% }) %>
-  </table>
 
-  <form method="POST" action="/staff/cart/submit">
-    <button class="submit-cart" type="submit">Submit Cart</button>
-  </form>
+      <% items.forEach(i => { %>
+        <tr>
+          <td><%= i.name %></td>
+          <td><%= i.quantity %></td>
+          <td>
+            <form method="POST" action="/staff/cart/decrease/<%= i.cart_item_id %>" style="display:inline">
+              <button type="submit" class="decrease">−</button>
+            </form>
+
+            <strong><%= i.quantity %></strong>
+
+            <form method="POST" action="/staff/cart/increase/<%= i.cart_item_id %>" style="display:inline">
+              <button type="submit" class="increase">+</button>
+            </form>
+
+            <form method="POST" action="/staff/cart/remove/<%= i.cart_item_id %>" style="display:inline">
+              <button type="submit" class="remove">Remove</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </table>
+
+    <form method="POST" action="/staff/cart/submit">
+      <button class="submit-cart" type="submit">Submit Cart</button>
+    </form>
+
+  <% } %>
 
 </body>
 </html>

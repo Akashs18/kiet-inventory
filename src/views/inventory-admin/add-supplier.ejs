@@ -111,6 +111,13 @@
 
     <a href="/inventory-admin/suppliers" class="button-back">← Back to Suppliers</a>
 
+    <% if (typeof error !== 'undefined') { %>
+  <div style="color: red; margin-bottom: 15px;">
+    <%= error %>
+  </div>
+<% } %>
+
+
     <form method="POST" action="/inventory-admin/supplier/add">
       <input type="text" name="name" placeholder="Supplier Name" required />
       <input type="text" name="contact" placeholder="Contact Info" required />
