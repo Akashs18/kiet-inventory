@@ -25,6 +25,26 @@ export const dashboard = async (req, res) => {
 export const addProduct = async (req, res) => {
   const { name, quantity, supplier_id } = req.body;
 
+  // Check for duplicate product (same name + same supplier)
+  const existing = await pool.query(
+    `SELECT id FROM products 
+     WHERE LOWER(name) = LOWER($1) AND supplier_id = $2`,
+    [name, supplier_id]
+  );
+
+  if (existing.rows.length > 0) {
+    // Duplicate found → show error
+    const suppliers = await pool.query("SELECT id, name FROM suppliers");
+
+    return res.render("inventory-admin/add-product", {
+      error: "Product already exists for this supplier.",
+      suppliers: suppliers.rows,
+      name,
+      quantity,
+      supplier_id
+    });
+  }
+
   await pool.query(
     "INSERT INTO products (name,quantity,supplier_id) VALUES ($1,$2,$3)",
     [name, quantity, supplier_id]
@@ -79,73 +99,95 @@ export const uploadPO = async (req, res) => {
 export const receiveOrder = async (req, res) => {
   const { cart_id } = req.params;
 
-  // Get cart items and staff email
-  const itemsResult = await pool.query(`
-    SELECT 
-      ci.quantity,
-      p.id AS product_id,
-      p.name AS product_name,
-      u.email,
-      u.name AS staff_name
-    FROM cart_items ci
-    JOIN carts c ON ci.cart_id = c.id
-    JOIN products p ON ci.product_id = p.id
-    JOIN users u ON c.staff_id = u.id
-    WHERE c.id=$1
-  `, [cart_id]);
+  const client = await pool.connect();
 
-  const items = itemsResult.rows;
+  try {
+    await client.query("BEGIN"); // Start transaction
 
-   // 🔢 Generate indent number
-  const indentNo = await generateIndentNumber(pool);
+    // Get cart items and staff email
+    const itemsResult = await client.query(`
+      SELECT 
+        ci.quantity,
+        p.id AS product_id,
+        p.name AS product_name,
+        p.quantity AS stock_quantity,
+        u.email,
+        u.name AS staff_name
+      FROM cart_items ci
+      JOIN carts c ON ci.cart_id = c.id
+      JOIN products p ON ci.product_id = p.id
+      JOIN users u ON c.staff_id = u.id
+      WHERE c.id=$1
+      FOR UPDATE
+    `, [cart_id]);
 
-  // Update stock
-  for (const item of items) {
-    await pool.query(
-      "UPDATE products SET quantity = quantity - $1 WHERE id=$2",
-      [item.quantity, item.product_id]
+    const items = itemsResult.rows;
+
+    // Check if enough stock exists
+    for (const item of items) {
+      if (item.quantity > item.stock_quantity) {
+        await client.query("ROLLBACK");
+        return res.status(400).send(`Not enough stock for product: ${item.product_name}`);
+      }
+    }
+
+    // Generate indent number
+    const indentNo = await generateIndentNumber(client);
+
+    // Update stock
+    for (const item of items) {
+      await client.query(
+        "UPDATE products SET quantity = quantity - $1 WHERE id=$2",
+        [item.quantity, item.product_id]
+      );
+    }
+
+    // Mark cart as received
+    await client.query(
+      "UPDATE carts SET status='received', indent_no=$1, received_at=NOW() WHERE id=$2",
+      [indentNo, cart_id]
     );
-  }
 
-  // Mark cart as received
-  await pool.query(
-    "UPDATE carts SET status='received', indent_no=$1, received_at=NOW() WHERE id=$2",
-    [indentNo, cart_id]
-  );
+    await client.query("COMMIT"); // Commit transaction
 
-   // Generate PDF
-  const pdfPath = await generateIndentPDF(
-    {
-      cart_id,
+    // Generate PDF
+    const pdfPath = await generateIndentPDF(
+      {
+        cart_id,
         indent_no: indentNo,
-      staff_name: items[0].staff_name
-    },
-    items
-  );
+        staff_name: items[0].staff_name
+      },
+      items
+    );
 
-  // Send indent email to staff
-  const staffEmail = items[0].email;
-  const productList = items.map(i => `${i.product_name} - ${i.quantity}`).join("<br>");
-  `Indent Letter - ${indentNo}`;
-  const emailContent = `
-    <p>Dear Staff,</p>
-    <p>Your indent <b>${indentNo}</b> request has been processed. Here is the list of products you received:</p>
-    <p>${productList}</p>
-     <p>Please find the attached indent letter.</p>
-    <p>Regards,<br>Inventory Team</p>
-  `;
+    // Send email
+    const staffEmail = items[0].email;
+    const productList = items.map(i => `${i.product_name} - ${i.quantity}`).join("<br>");
+    const emailContent = `
+      <p>Dear Staff,</p>
+      <p>Your indent <b>${indentNo}</b> request has been processed. Here is the list of products you received:</p>
+      <p>${productList}</p>
+      <p>Please find the attached indent letter.</p>
+      <p>Regards,<br>Inventory Team</p>
+    `;
 
-  await sendMail(
-    [staffEmail],
-    "Indent Processed",
-    emailContent,
-    [{filename: `${indentNo}.pdf`,
-        path: pdfPath}]
-    
-  );
+    await sendMail(
+      [staffEmail],
+      `Indent Letter - ${indentNo}`,
+      emailContent,
+      [{ filename: `${indentNo}.pdf`, path: pdfPath }]
+    );
 
-  res.redirect("/inventory-admin/orders/pending");
+    res.redirect("/inventory-admin/orders/pending");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error(error);
+    res.status(500).send("Failed to process the order.");
+  } finally {
+    client.release();
+  }
 };
+
 
 export const orders = async (req, res) => {
   const result = await pool.query(`

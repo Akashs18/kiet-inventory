@@ -88,6 +88,13 @@
   <div class="form-container">
     <h2>Add Product</h2>
 
+    <% if (typeof error !== 'undefined') { %>
+      <div style="color: red; margin-bottom: 15px;">
+        <%= error %>
+      </div>
+    <% } %>
+
+
     <form method="POST" action="/inventory-admin/product/add">
       <input name="name" placeholder="Product Name" required />
       <input type="number" name="quantity" placeholder="Quantity" min="1" required />
