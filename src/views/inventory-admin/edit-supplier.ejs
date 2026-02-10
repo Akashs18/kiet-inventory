@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Upload Purchase Order</title>
+  <title>Edit Supplier</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
@@ -35,20 +35,13 @@
       text-align: center;
     }
 
-    nav {
-      text-align: center;
-      margin-bottom: 20px;
-      font-weight: bold;
-    }
-
-    nav a {
-      color: #5563DE;
-      text-decoration: none;
-      margin: 0 8px;
-    }
-
-    nav a:hover {
-      text-decoration: underline;
+    .error {
+      background: #ffe6e6;
+      color: #b30000;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-size: 14px;
     }
 
     form {
@@ -57,8 +50,7 @@
       gap: 14px;
     }
 
-    input[type="text"],
-    input[type="file"] {
+    input {
       padding: 12px 14px;
       border-radius: 8px;
       border: 1px solid #ccc;
@@ -88,11 +80,17 @@
       background: #3b46b1;
     }
 
-    .note {
-      margin-top: 12px;
-      font-size: 13px;
-      color: #666;
+    .back {
+      display: block;
+      margin-top: 18px;
       text-align: center;
+      text-decoration: none;
+      font-weight: bold;
+      color: #555;
+    }
+
+    .back:hover {
+      color: #000;
     }
   </style>
 </head>
@@ -100,34 +98,41 @@
 <body>
 
   <div class="card">
-    <h2>Upload Purchase Order</h2>
+    <h2>Edit Supplier</h2>
 
-    <nav>
-      <a href="/inventory-admin/dashboard">Dashboard</a> |
-      <a href="/logout">Logout</a>
-    </nav>
+    <% if (error) { %>
+      <div class="error"><%= error %></div>
+    <% } %>
 
-    <form method="POST" action="/inventory-admin/po/upload" enctype="multipart/form-data">
+    <form method="POST" action="/inventory-admin/suppliers/edit/<%= supplier.id %>">
       <input
         type="text"
-        name="supplier_id"
-        placeholder="Supplier ID"
+        name="name"
+        placeholder="Supplier Name"
+        value="<%= supplier.name %>"
         required
       />
 
       <input
-        type="file"
-        name="po"
-        accept=".pdf,.jpg,.png"
+        type="text"
+        name="contact"
+        placeholder="Contact"
+        value="<%= supplier.contact %>"
         required
       />
 
-      <button type="submit">Upload PO</button>
+      <input
+        type="text"
+        name="address"
+        placeholder="Address"
+        value="<%= supplier.address %>"
+        required
+      />
+
+      <button type="submit">Update Supplier</button>
     </form>
 
-    <div class="note">
-      Accepted formats: PDF, JPG, PNG
-    </div>
+    <a href="/inventory-admin/suppliers" class="back">← Back to Suppliers</a>
   </div>
 
 </body>

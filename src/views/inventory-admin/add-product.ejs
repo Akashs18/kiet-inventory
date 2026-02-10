@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Add Product | Inventory Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  
   <style>
     /* Reset and global styles */
     * {
@@ -81,6 +81,7 @@
       background: #3b46b1;
       transform: translateY(-2px);
     }
+
   </style>
 </head>
 <body>
@@ -99,7 +100,7 @@
       <input name="name" placeholder="Product Name" required />
       <input type="number" name="quantity" placeholder="Quantity" min="1" required />
 
-      <select name="supplier_id" required>
+      <select name="supplier_id" id="supplierSelect" required>
         <option value="">Select Supplier</option>
         <% suppliers.forEach(s => { %>
           <option value="<%= s.id %>"><%= s.name %></option>

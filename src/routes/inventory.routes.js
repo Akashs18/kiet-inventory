@@ -326,6 +326,60 @@ router.get(
   }
 );
 
+//edit supplier page
+router.get(
+  "/suppliers/edit/:id",
+  isAuth,
+  allow("inventory-admin", "super-admin"),
+  async (req, res) => {
+    const { id } = req.params;
+
+    const result = await pool.query(
+      "SELECT * FROM suppliers WHERE id = $1",
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.redirect("/inventory-admin/suppliers");
+    }
+
+    res.render("inventory-admin/edit-supplier", {
+      supplier: result.rows[0],
+      error: null
+    });
+  }
+);
+
+//Update supplier page
+router.post(
+  "/suppliers/edit/:id",
+  isAuth,
+  allow("inventory-admin", "super-admin"),
+  async (req, res) => {
+    const { id } = req.params;
+    const { name, contact, address } = req.body;
+
+    // Prevent duplicates (excluding current supplier)
+    const existing = await pool.query(
+      "SELECT * FROM suppliers WHERE (name = $1 OR contact = $2) AND id != $3",
+      [name, contact, id]
+    );
+
+    if (existing.rows.length > 0) {
+      return res.render("inventory-admin/edit-supplier", {
+        supplier: { id, name, contact, address },
+        error: "Supplier with this name or contact already exists."
+      });
+    }
+
+    await pool.query(
+      "UPDATE suppliers SET name=$1, contact=$2, address=$3 WHERE id=$4",
+      [name, contact, address, id]
+    );
+
+    res.redirect("/inventory-admin/suppliers");
+  }
+);
 
 
 export default router;
