@@ -7,6 +7,9 @@ export const dashboard = async (req, res) => {
   const offset = (page - 1) * limit;
   const search = (req.query.search || "").trim();
 
+  // ✅ Get the staff ID from session first
+ const staffId = req.session.user.id;
+
   const result = await pool.query(
     `SELECT * FROM products
      WHERE name ILIKE $1
@@ -15,11 +18,25 @@ export const dashboard = async (req, res) => {
     [`%${search}%`, limit + 1, offset]
   );
 
+  // 2️⃣ Get order summary for this staff member
+  const summaryResult = await pool.query(
+    `SELECT
+       COUNT(*) FILTER (WHERE status='received') AS received,
+       COUNT(*) FILTER (WHERE status='ordered') AS pending,
+       COUNT(*) AS total
+     FROM carts
+     WHERE staff_id = $1 AND status != 'pending'`,
+    [staffId]
+  );
+
+  const summary = summaryResult.rows[0];
+
   res.render("staff/dashboard", {
     products: result.rows.slice(0, limit),
     page,
     search,
-    hasNext: result.rows.length > limit
+    hasNext: result.rows.length > limit,
+    summary
   });
 };
 

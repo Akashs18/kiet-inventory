@@ -162,6 +162,13 @@
         required
       />
 
+      <input
+        name="description"
+        value="<%= product.description %>"
+        placeholder="Description"
+        required
+      />
+
       <select name="supplier_id" required>
         <% suppliers.forEach(s => { %>
           <option

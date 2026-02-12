@@ -6,128 +6,230 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    /* Reset and global styles */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+  :root {
+    --primary: #4F46E5;
+    --primary-dark: #4338CA;
+    --bg: #F9FAFB;
+    --card: #ffffff;
+    --text: #111827;
+    --muted: #6B7280;
+    --border: #E5E7EB;
+    --success: #16A34A;
+    --warning: #F59E0B;
+    --danger: #DC2626;
+    --radius: 12px;
+    --shadow-sm: 0 4px 12px rgba(0,0,0,0.05);
+    --shadow-md: 0 10px 25px rgba(0,0,0,0.08);
+  }
 
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: var(--bg);
+    display: flex;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* =======================
+     SIDEBAR
+  ======================= */
+  .sidebar {
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: linear-gradient(180deg, var(--primary), var(--primary-dark));
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar a {
+    color: white;
+    text-decoration: none;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    margin-bottom: 8px;
+    transition: 0.25s ease;
+  }
+
+  .sidebar a:hover {
+    background: rgba(255,255,255,0.15);
+    transform: translateX(4px);
+  }
+
+  /* =======================
+     MAIN CONTENT
+  ======================= */
+  .main-content {
+    margin-left: 250px;
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+    height: 100vh;
+  }
+
+  h2 {
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 25px;
+  }
+
+  /* =======================
+     SEARCH BAR
+  ======================= */
+  .search-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+  }
+
+  .search-bar input {
+    flex: 1;
+    max-width: 420px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-size: 14px;
+    outline: none;
+  }
+
+  .search-bar input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+  }
+
+  /* =======================
+     BUTTON SYSTEM
+  ======================= */
+  .btn {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.2s ease;
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: var(--primary-dark);
+  }
+
+  .btn-secondary {
+    background: #E5E7EB;
+    color: #374151;
+  }
+
+  .btn-secondary:hover {
+    background: #D1D5DB;
+  }
+
+  .btn-success {
+    background: var(--success);
+    color: white;
+  }
+
+  .btn-success:hover {
+    opacity: 0.9;
+  }
+
+  .btn-warning {
+    background: var(--warning);
+    color: #111;
+  }
+
+  .btn-warning:hover {
+    opacity: 0.9;
+  }
+
+  /* =======================
+     TABLE
+  ======================= */
+  .table-wrapper {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead {
+    background: #F3F4F6;
+  }
+
+  th {
+    padding: 14px 18px;
+    text-align: left;
+    font-size: 13px;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+
+  tbody tr:hover {
+    background: #F9FAFB;
+  }
+
+  .action-bar {
+    margin-bottom: 20px;
+  }
+
+  /* =======================
+     RESPONSIVE
+  ======================= */
+  @media (max-width: 900px) {
     body {
-      background: #f4f6f8;
-      display: flex;
-      min-height: 100vh;
-      color: #333;
-    }
-
-    /* Sidebar navigation */
-    .sidebar {
-      width: 220px;
-      background: #5563DE;
-      padding: 30px 20px;
-      display: flex;
       flex-direction: column;
-      gap: 20px;
-      color: white;
+      overflow: auto;
+      height: auto;
     }
 
-    .sidebar a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-      transition: background 0.3s, padding 0.3s;
-      padding: 10px 12px;
-      border-radius: 6px;
-    }
-
-    .sidebar a:hover {
-      background: #3b46b1;
-      padding-left: 16px;
-    }
-
-    /* Main content area */
-    .main-content {
-      flex: 1;
-      padding: 40px 30px;
-    }
-
-    h2 {
-      color: #5563DE;
-      margin-bottom: 20px;
-    }
-
-    a.button {
-      display: inline-block;
-      padding: 10px 15px;
-      margin-right: 10px;
-      margin-bottom: 20px;
-      background: #28a745;
-      color: white;
-      text-decoration: none;
-      border-radius: 6px;
-      font-weight: bold;
-      transition: background 0.3s;
-    }
-
-    a.button.add {
-      background: #007bff;
-    }
-
-    a.button.add:hover {
-      background: #0056b3;
-    }
-
-    a.button.dashboard:hover {
-      background: #218838;
-    }
-
-    /* Table styles */
-    table {
+    .sidebar {
+      position: relative;
       width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      height: auto;
+      flex-direction: row;
+      justify-content: space-around;
     }
 
-    th, td {
-      padding: 12px 15px;
-      text-align: left;
+    .main-content {
+      margin-left: 0;
+      height: auto;
     }
+  }
+</style>
 
-    th {
-      background: #5563DE;
-      color: white;
-    }
-
-    tr:nth-child(even) {
-      background: #f8f9fa;
-    }
-
-    tr:hover {
-      background: #e2e6ea;
-    }
-
-    @media (max-width: 768px) {
-      body {
-        flex-direction: column;
-      }
-      .sidebar {
-        width: 100%;
-        flex-direction: row;
-        justify-content: space-around;
-        padding: 20px 0;
-      }
-      .main-content {
-        padding: 20px;
-      }
-      table {
-        font-size: 14px;
-      }
-    }
-  </style>
 </head>
 <body>
 
@@ -143,64 +245,60 @@
   <div class="main-content">
     <h2>Suppliers</h2>
 
-    <form method="GET" style="margin-bottom: 20px;">
+ <form method="GET" class="search-bar">
   <input
     type="text"
     name="q"
     placeholder="Search by ID, name, contact, or address..."
     value="<%= query || '' %>"
-    style="
-      width: 100%;
-      max-width: 400px;
-      padding: 10px 14px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 15px;
-    "
   />
+
+  <button type="submit" class="btn btn-primary">
+    🔍 Search
+  </button>
+
+  <a href="/inventory-admin/suppliers" class="btn btn-secondary">
+    Clear
+  </a>
 </form>
 
+   <div class="action-bar">
+      <a href="/inventory-admin/suppliers/add" class="btn btn-success">
+        + Add Supplier
+      </a>
+   </div>
 
-    <a href="/inventory-admin/suppliers/add" class="button add">+ Add Supplier</a>
     
-
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Contact</th>
-          <th>Address</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% suppliers.forEach(s => { %>
+    <div class="table-wrapper">
+      <table>
+        <thead>
           <tr>
-            <td><%= s.id %></td>
-            <td><%= s.name %></td>
-            <td><%= s.contact %></td>
-            <td><%= s.address %></td>
-            <td>
-                <a
-                  href="/inventory-admin/suppliers/edit/<%= s.id %>"
-                  style="
-                    padding:6px 10px;
-                    background:#ffc107;
-                    color:#000;
-                    border-radius:5px;
-                    text-decoration:none;
-                    font-weight:bold;
-                  "
-                >
-                  Edit
-                </a>
-             </td>
-
+            <th>ID</th>
+            <th>Name</th>
+            <th>Contact</th>
+            <th>Address</th>
+            <th>Action</th>
           </tr>
-        <% }) %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% suppliers.forEach(s => { %>
+            <tr>
+              <td><%= s.id %></td>
+              <td><%= s.name %></td>
+              <td><%= s.contact %></td>
+              <td><%= s.address %></td>
+              <td>
+                  <a href="/inventory-admin/suppliers/edit/<%= s.id %>" class="btn btn-warning">
+                     Edit
+                  </a>
+
+              </td>
+
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>  
   </div>
 
 </body>

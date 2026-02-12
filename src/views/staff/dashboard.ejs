@@ -1,209 +1,392 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Staff Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Staff Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f4f6f8;
-      padding: 40px 20px;
-      color: #333;
-    }
+<!-- Font Awesome -->
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+/>
 
-    h2 {
-      color: #5563DE;
-      text-align: center;
-      margin-bottom: 20px;
-    }
+<style>
+/* =========================
+   ROOT VARIABLES
+========================= */
+:root {
+  --primary: #5563DE;
+  --success: #28a745;
+  --warning: #f39c12;
+  --bg: #f5f6fa;
+  --card-bg: #ffffff;
+  --text-dark: #2c3e50;
+  --muted: #777;
+  --border: #eee;
+  --radius: 12px;
+  --shadow-sm: 0 4px 12px rgba(0,0,0,0.06);
+  --shadow-md: 0 8px 20px rgba(0,0,0,0.12);
+}
 
-    nav {
-      text-align: center;
-      margin-bottom: 20px;
-    }
+/* =========================
+   RESET
+========================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    nav a {
-      color: #5563DE;
-      text-decoration: none;
-      font-weight: bold;
-      margin: 0 10px;
-      transition: color 0.3s;
-    }
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg);
+  padding: 20px;
+  color: #333;
+}
 
-    nav a:hover {
-      color: #3b46b1;
-      text-decoration: underline;
-    }
+/* =========================
+   HEADER
+========================= */
+h2 {
+  text-align: center;
+  color: var(--text-dark);
+  margin-bottom: 25px;
+}
 
-    form.search-form {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 30px;
-      gap: 10px;
-    }
+/* =========================
+   NAVBAR
+========================= */
+nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 30px;
+}
 
-    form.search-form input {
-      padding: 10px 15px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      width: 250px;
-      font-size: 16px;
-    }
+nav a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: var(--primary);
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  background: var(--card-bg);
+  box-shadow: var(--shadow-sm);
+  transition: 0.3s;
+}
 
-    form.search-form button {
-      padding: 10px 20px;
-      border-radius: 8px;
-      border: none;
-      background: #5563DE;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
+nav a:hover {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-2px);
+}
 
-    form.search-form button:hover {
-      background: #3b46b1;
-    }
+/* =========================
+   STATS SECTION
+========================= */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 25px;
+  margin-bottom: 35px;
+}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
+.stat-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 25px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  border: 1px solid var(--border);
+  transition: 0.3s;
+}
 
-    th, td {
-      padding: 15px;
-      text-align: center;
-      border-bottom: 1px solid #e0e0e0;
-    }
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+}
 
-    th {
-      background: #5563DE;
-      color: white;
-      font-size: 16px;
-    }
+.stat-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: white;
+}
 
-    tr:hover {
-      background: #f1f3f6;
-    }
+.blue { background: var(--primary); }
+.green { background: var(--success); }
+.orange { background: var(--warning); }
 
-    input[type="number"] {
-      width: 60px;
-      padding: 6px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      text-align: center;
-    }
+.stat-info h4 {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 5px;
+}
 
-    button.add-btn {
-      background: #5cb85c;
-      color: white;
-      padding: 6px 12px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background 0.3s, transform 0.2s;
-    }
+.stat-info p {
+  font-size: 26px;
+  font-weight: bold;
+}
 
-    button.add-btn:hover {
-      background: #449d44;
-      transform: translateY(-1px);
-    }
+/* =========================
+   SEARCH FORM
+========================= */
+.search-form {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
 
-    .pagination {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 16px;
-    }
+.search-form input {
+  width: 300px;
+  padding: 12px;
+  border-radius: var(--radius);
+  border: 1px solid #ccc;
+  font-size: 16px;
+  transition: 0.3s;
+}
 
-    .pagination a {
-      margin: 0 8px;
-      color: #5563DE;
-      text-decoration: none;
-      font-weight: bold;
-      transition: color 0.3s;
-    }
+.search-form input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 8px rgba(85,99,222,0.3);
+  outline: none;
+}
 
-    .pagination a:hover {
-      color: #3b46b1;
-      text-decoration: underline;
-    }
+.search-form button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 18px;
+  border-radius: var(--radius);
+  border: none;
+  background: var(--primary);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
 
-    @media (max-width: 600px) {
-      table, th, td {
-        font-size: 14px;
-      }
+.search-form button:hover {
+  background: #3b46b1;
+  transform: translateY(-2px);
+}
 
-      form.search-form {
-        flex-direction: column;
-        align-items: center;
-      }
+/* =========================
+   TABLE
+========================= */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: white;
+  box-shadow: var(--shadow-sm);
+}
 
-      form.search-form input {
-        width: 100%;
-      }
-    }
-  </style>
+th, td {
+  padding: 15px;
+  text-align: center;
+}
+
+th {
+  background: var(--primary);
+  color: white;
+}
+
+tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+tr:hover {
+  background: #e8eaf6;
+}
+
+input[type="number"] {
+  width: 70px;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+.add-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--success);
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.add-btn:hover {
+  background: #218838;
+  transform: translateY(-1px);
+}
+
+/* =========================
+   PAGINATION
+========================= */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.pagination a {
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--primary);
+  font-weight: 600;
+  background: white;
+  box-shadow: var(--shadow-sm);
+  transition: 0.3s;
+}
+
+.pagination a:hover {
+  background: var(--primary);
+  color: white;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+  .search-form input {
+    width: 100%;
+  }
+}
+</style>
 </head>
+
 <body>
 
-  <h2>Staff Dashboard</h2>
+<h2>Staff Dashboard</h2>
 
-  <nav>
-    <a href="/staff/cart">Cart</a> |
-    <a href="/staff/orders">My Orders</a>|
-    <a href="/logout">Logout</a> 
-  </nav>
+<!-- NAVIGATION -->
+<nav>
+  <a href="/staff/cart"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
+  <a href="/staff/orders"><i class="fa-solid fa-box"></i> My Orders</a>
+  <a href="/logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+</nav>
 
-  <hr>
 
-  <!-- SEARCH -->
-  <form method="GET" action="/staff/dashboard" class="search-form">
-    <input name="search" placeholder="Search product" value="<%= search %>">
-    <button type="submit">Search</button>
-  </form>
 
-  <!-- PRODUCT TABLE -->
-  <table>
-    <tr>
-      <th>Product</th>
-      <th>Available</th>
-      <th>Add</th>
-    </tr>
+<!-- ORDER SUMMARY -->
+<div class="stats">
 
-    <% products.forEach(p => { %>
-      <tr>
-        <td><%= p.name %></td>
-        <td><%= p.quantity %></td>
-        <td>
-          <form method="POST" action="/staff/cart/add" style="display:flex; justify-content:center; gap:5px;">
-            <input type="hidden" name="product_id" value="<%= p.id %>">
-            <input type="number" name="quantity" min="1" required>
-            <button class="add-btn" type="submit">Add</button>
-          </form>
-        </td>
-      </tr>
-    <% }) %>
-  </table>
-
-  <!-- PAGINATION -->
-  <div class="pagination">
-    <% if (page > 1) { %>
-      <a href="?page=<%= page - 1 %>&search=<%= search %>">Prev</a>
-    <% } %>
-
-    Page <%= page %>
-
-    <% if (hasNext) { %>
-      <a href="?page=<%= page + 1 %>&search=<%= search %>">Next</a>
-    <% } %>
+  <div class="stat-card">
+    <div class="stat-icon blue">
+      <i class="fa-solid fa-box"></i>
+    </div>
+    <div class="stat-info">
+      <h4>Orders Received</h4>
+      <p><%= summary?.received || 0 %></p>
+    </div>
   </div>
+
+  <div class="stat-card">
+    <div class="stat-icon green">
+      <i class="fa-solid fa-hourglass-half"></i>
+    </div>
+    <div class="stat-info">
+      <h4>Orders Pending</h4>
+      <p><%= summary?.pending || 0 %></p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon orange">
+      <i class="fa-solid fa-cart-shopping"></i>
+    </div>
+    <div class="stat-info">
+      <h4>Total Orders</h4>
+      <p><%= summary?.total || 0 %></p>
+    </div>
+  </div>
+
+</div>
+
+<!-- SEARCH -->
+<form method="GET" action="/staff/dashboard" class="search-form">
+  <input name="search" placeholder="Search product" value="<%= search %>">
+  <button type="submit">
+    <i class="fa-solid fa-magnifying-glass"></i> Search
+  </button>
+</form>
+
+<!-- PRODUCT TABLE -->
+<% if (search && products.length > 0) { %>
+
+<table>
+  <tr>
+    <th>Product</th>
+    <th>Available</th>
+    <th>Add</th>
+  </tr>
+
+  <% products.forEach(p => { %>
+  <tr>
+    <td><%= p.name %></td>
+    <td><%= p.quantity %></td>
+    <td>
+      <form method="POST" action="/staff/cart/add" style="display:flex; justify-content:center; gap:5px;">
+        <input type="hidden" name="product_id" value="<%= p.id %>">
+        <input type="number" name="quantity" min="1" required>
+        <button class="add-btn" type="submit">
+          <i class="fa-solid fa-plus"></i> Add
+        </button>
+      </form>
+    </td>
+  </tr>
+  <% }) %>
+</table>
+
+<!-- PAGINATION -->
+<div class="pagination">
+  <% if (page > 1) { %>
+    <a href="?page=<%= page - 1 %>&search=<%= search %>">
+      <i class="fa-solid fa-arrow-left"></i> Prev
+    </a>
+  <% } %>
+
+  <span>Page <%= page %></span>
+
+  <% if (hasNext) { %>
+    <a href="?page=<%= page + 1 %>&search=<%= search %>">
+      Next <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  <% } %>
+</div>
+
+<% } else if (search) { %>
+
+<p style="text-align:center; color:#888; margin-top:20px;">
+  No products found for "<%= search %>"
+</p>
+
+<% } %>
 
 </body>
 </html>

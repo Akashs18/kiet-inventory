@@ -30,6 +30,14 @@ router.post(
   allow("inventory-admin", "super-admin"),
   addProduct
 );
+// For inline add row in products page
+router.post(
+  "/products",
+  isAuth,
+  allow("inventory-admin", "super-admin"),
+  addProduct
+);
+
 
 /* Suppliers */
 router.post(
@@ -73,24 +81,51 @@ router.get(
   allow("inventory-admin", "super-admin"),
   async (req, res) => {
     const search = req.query.search || "";
+    const page = parseInt(req.query.page) || 1; // current page
+    const limit = 10; // products per page
+    const offset = (page - 1) * limit;
 
-    const result = await pool.query(
+    // Total count for pagination
+    const countResult = await pool.query(
       `
-      SELECT p.id, p.name, p.quantity, s.name AS supplier
+      SELECT COUNT(*) AS total
       FROM products p
       LEFT JOIN suppliers s ON p.supplier_id = s.id
       WHERE p.name ILIKE $1
-      ORDER BY p.id DESC
       `,
       [`%${search}%`]
     );
 
+    const total = parseInt(countResult.rows[0].total);
+    const totalPages = Math.ceil(total / limit);
+
+    // Fetch paginated products
+    const result = await pool.query(
+      `
+      SELECT p.id, p.name, p.quantity, p.description, s.name AS supplier
+      FROM products p
+      LEFT JOIN suppliers s ON p.supplier_id = s.id
+      WHERE p.name ILIKE $1
+      ORDER BY p.id DESC
+      LIMIT $2 OFFSET $3
+      `,
+      [`%${search}%`, limit, offset]
+    );
+
+    const suppliers = await pool.query(
+      "SELECT id, name FROM suppliers"
+    );
+
     res.render("inventory-admin/products", {
       products: result.rows,
-      search
+      suppliers: suppliers.rows,
+      search,
+      currentPage: page,
+      totalPages
     });
   }
 );
+
 
 
 
@@ -281,27 +316,47 @@ router.get(
   allow("inventory-admin"),
   async (req, res) => {
 
-    const search = req.query.q || ""; 
+   const search = req.query.q || "";
+const searchInt = parseInt(search, 10); // NaN if not a number
 
-    const result = await pool.query(`
-       SELECT 
-        c.id AS cart_id,
-        u.name AS staff_name,
-        c.created_at,
-        p.name AS product_name,
-        ci.quantity
-      FROM carts c
-      JOIN users u ON u.id = c.staff_id
-      JOIN cart_items ci ON ci.cart_id = c.id
-      JOIN products p ON ci.product_id = p.id
-      WHERE c.status = 'received'
-        AND (
-          CAST(c.id AS TEXT) ILIKE $1
-          OR u.name ILIKE $1
-          OR p.name ILIKE $1
-        )
-      ORDER BY c.created_at DESC
-    `, [`%${search}%`]);
+let result;
+
+if (!isNaN(searchInt)) {
+  // If search is a number, match cart ID exactly
+  result = await pool.query(`
+    SELECT 
+      c.id AS cart_id,
+      u.name AS staff_name,
+      c.created_at,
+      p.name AS product_name,
+      ci.quantity
+    FROM carts c
+    JOIN users u ON u.id = c.staff_id
+    JOIN cart_items ci ON ci.cart_id = c.id
+    JOIN products p ON ci.product_id = p.id
+    WHERE c.status = 'received'
+      AND c.id = $1
+    ORDER BY c.created_at DESC
+  `, [searchInt]);
+} else {
+  // If search is text, match staff or product names
+  result = await pool.query(`
+    SELECT 
+      c.id AS cart_id,
+      u.name AS staff_name,
+      c.created_at,
+      p.name AS product_name,
+      ci.quantity
+    FROM carts c
+    JOIN users u ON u.id = c.staff_id
+    JOIN cart_items ci ON ci.cart_id = c.id
+    JOIN products p ON ci.product_id = p.id
+    WHERE c.status = 'received'
+      AND (u.name ILIKE $1 OR p.name ILIKE $1)
+    ORDER BY c.created_at DESC
+  `, [`%${search}%`]);
+}
+
 
     const orders = {};
     result.rows.forEach(row => {
@@ -380,6 +435,25 @@ router.post(
     res.redirect("/inventory-admin/suppliers");
   }
 );
+
+router.get("/dashboard", async (req, res) => {
+
+  const stats = {
+    products: 120,
+    suppliers: 25,
+    pendingOrders: 8
+  };
+
+  const monthlyOrders = [12, 19, 8, 15, 22, 30];
+  const productGrowth = [5, 10, 15, 20, 28, 35];
+
+  res.render("dashboard", {
+    stats,
+    monthlyOrders,
+    productGrowth
+  });
+
+});
 
 
 export default router;

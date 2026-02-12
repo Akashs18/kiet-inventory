@@ -101,6 +101,37 @@
         font-size: 14px;
       }
     }
+
+    .search-btn {
+  padding: 10px 16px;
+  margin-left: 6px;
+  border-radius: 8px;
+  border: none;
+  background: #5563DE;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.search-btn:hover {
+  background: #3b46b1;
+}
+
+.clear-btn {
+  padding: 10px 16px;
+  margin-left: 6px;
+  border-radius: 8px;
+  border: none;
+  background: #6c757d;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.clear-btn:hover {
+  background: #5a6268;
+}
+
   </style>
 </head>
 <body>
@@ -124,7 +155,18 @@
       font-size: 15px;
     "
   />
+
+  <button type="submit" class="search-btn">Search</button>
+
+  <button
+    type="button"
+    class="clear-btn"
+    onclick="window.location.href=window.location.pathname"
+  >
+    Clear
+  </button>
 </form>
+
 
 
   <% if (orders.length === 0) { %>

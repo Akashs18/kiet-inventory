@@ -5,25 +5,61 @@ import { generateIndentNumber } from "../utils/indentNumber.js";
 
 /* ---------- DASHBOARD ---------- */
 export const dashboard = async (req, res) => {
-    
-  const products = await pool.query("SELECT COUNT(*) FROM products");
-  const suppliers = await pool.query("SELECT COUNT(*) FROM suppliers"); 
-   const pendingOrders = await pool.query(
-    "SELECT COUNT(*) FROM carts WHERE status = 'pending'"
-  ); 
-  res.render("inventory-admin/dashboard", {
-    stats: {
-      
-      products: products.rows[0].count,
-      suppliers: suppliers.rows[0].count,
-      pendingOrders: pendingOrders.rows[0].count
-    }
-  });
+  try {
+
+    const products = await pool.query("SELECT COUNT(*) FROM products");
+    const suppliers = await pool.query("SELECT COUNT(*) FROM suppliers");
+    const pendingOrders = await pool.query(
+      "SELECT COUNT(*) FROM carts WHERE status = 'ordered'"
+    );
+
+    // Monthly Orders (last 6 months)
+    const monthlyOrdersQuery = await pool.query(`
+      SELECT 
+        TO_CHAR(created_at, 'Mon') AS month,
+        COUNT(*) AS total
+      FROM carts
+      WHERE status = 'ordered'
+      GROUP BY month
+      ORDER BY MIN(created_at)
+      LIMIT 6
+    `);
+
+    // Product Growth (last 6 months)
+    const productGrowthQuery = await pool.query(`
+      SELECT 
+        TO_CHAR(created_at, 'Mon') AS month,
+        COUNT(*) AS total
+      FROM products
+      GROUP BY month
+      ORDER BY MIN(created_at)
+      LIMIT 6
+    `);
+
+    // Extract only numbers for chart
+    const monthlyOrders = monthlyOrdersQuery.rows.map(row => Number(row.total));
+    const productGrowth = productGrowthQuery.rows.map(row => Number(row.total));
+
+    res.render("inventory-admin/dashboard", {
+      stats: {
+        products: products.rows[0].count,
+        suppliers: suppliers.rows[0].count,
+        pendingOrders: pendingOrders.rows[0].count
+      },
+      monthlyOrders,
+      productGrowth
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server Error");
+  }
 };
+
 
 /* ---------- PRODUCTS ---------- */
 export const addProduct = async (req, res) => {
-  const { name, quantity, supplier_id } = req.body;
+  const { name, quantity, supplier_id, description } = req.body;
 
   // Check for duplicate product (same name + same supplier)
   const existing = await pool.query(
@@ -41,16 +77,17 @@ export const addProduct = async (req, res) => {
       suppliers: suppliers.rows,
       name,
       quantity,
-      supplier_id
+      supplier_id,
+      description
     });
   }
 
   await pool.query(
-    "INSERT INTO products (name,quantity,supplier_id) VALUES ($1,$2,$3)",
-    [name, quantity, supplier_id]
+    "INSERT INTO products (name,quantity,description,supplier_id) VALUES ($1,$2,$3,$4)",
+    [name, quantity, description ,supplier_id]
   );
 
-  res.redirect("/inventory-admin/dashboard");
+  res.redirect("/inventory-admin/products");
 };
 
 /* ---------- SUPPLIERS ---------- */
@@ -188,7 +225,7 @@ export const receiveOrder = async (req, res) => {
   }
 };
 
-
+// Order history
 export const orders = async (req, res) => {
   const result = await pool.query(`
     SELECT c.id AS cart_id, u.name AS staff_name, c.status, c.created_at, c.updated_at,

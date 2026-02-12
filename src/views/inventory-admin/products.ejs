@@ -4,184 +4,290 @@
   <meta charset="UTF-8">
   <title>Products | Inventory Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
-  <style>
-    /* Reset and global styles */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+<!-- JS (at the bottom, before </body>) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+
+ <style>
+  :root {
+    --primary: #4F46E5;
+    --primary-dark: #4338CA;
+    --bg: #F9FAFB;
+    --card-bg: #ffffff;
+    --text: #111827;
+    --muted: #6B7280;
+    --border: #E5E7EB;
+    --success: #16A34A;
+    --warning: #F59E0B;
+    --danger: #DC2626;
+    --radius: 12px;
+    --shadow-sm: 0 4px 12px rgba(0,0,0,0.05);
+    --shadow-md: 0 8px 25px rgba(0,0,0,0.08);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: var(--bg);
+    display: flex;
+    min-height: 100vh;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    color: var(--text);
+  }
+
+  /* ======================
+     SIDEBAR
+  ====================== */
+  .sidebar {
+    width: 250px;
+    background: linear-gradient(180deg, var(--primary), var(--primary-dark));
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar a {
+    text-decoration: none;
+    color: white;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    transition: all 0.25s ease;
+    opacity: 0.9;
+  }
+
+  .sidebar a:hover {
+    background: rgba(255,255,255,0.15);
+    opacity: 1;
+    transform: translateX(4px);
+  }
+
+  /* ======================
+     MAIN CONTENT
+  ====================== */
+  .main-content {
+    flex: 1;
+    padding: 40px;
+  }
+
+  h2 {
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 25px;
+  }
+
+  /* ======================
+     BUTTON SYSTEM
+  ====================== */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+  }
+
+  .btn-success {
+    background: var(--success);
+    color: white;
+  }
+
+  .btn-success:hover {
+    opacity: 0.9;
+  }
+
+  .btn-warning {
+    background: var(--warning);
+    color: #111;
+  }
+
+  .btn-warning:hover {
+    opacity: 0.9;
+  }
+
+  .btn-danger {
+    background: var(--danger);
+    color: white;
+  }
+
+  .btn-danger:hover {
+    background: #B91C1C;
+    transform: translateY(-1px);
+  }
+
+  /* ======================
+     SEARCH BAR
+  ====================== */
+  .search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .search-bar input[type="text"] {
+    flex: 1;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-size: 14px;
+    outline: none;
+    transition: 0.2s;
+  }
+
+  .search-bar input[type="text"]:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+  }
+
+  /* ======================
+     TABLE
+  ====================== */
+  .table-wrapper {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead {
+    background: #F3F4F6;
+  }
+
+  th {
+    text-align: left;
+    padding: 14px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 14px 18px;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody tr:hover {
+    background: #F9FAFB;
+  }
+
+  td.description {
+    max-width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--muted);
+  }
+
+  .quantity {
+    font-weight: 600;
+  }
+
+  .low-stock {
+    color: var(--danger);
+  }
+
+  /* ======================
+     ADD BUTTON CONTAINER
+  ====================== */
+  .action-bar {
+    margin-top: 25px;
+  }
+
+  /* ======================
+     RESPONSIVE
+  ====================== */
+  @media (max-width: 900px) {
     body {
-      background: #f4f6f8;
-      display: flex;
-      min-height: 100vh;
-      color: #333;
-    }
-
-    /* Sidebar navigation */
-    .sidebar {
-      width: 220px;
-      background: #5563DE;
-      padding: 30px 20px;
-      display: flex;
       flex-direction: column;
-      gap: 20px;
-      color: white;
     }
 
-    .sidebar a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-      transition: background 0.3s, padding 0.3s;
-      padding: 10px 12px;
-      border-radius: 6px;
-    }
-
-    .sidebar a:hover {
-      background: #3b46b1;
-      padding-left: 16px;
-    }
-
-    /* Main content area */
-    .main-content {
-      flex: 1;
-      padding: 40px 30px;
-    }
-
-    h2 {
-      color: #5563DE;
-      margin-bottom: 20px;
-    }
-
-    a.button {
-      display: inline-block;
-      margin-right: 10px;
-      padding: 8px 12px;
-      background: #28a745;
-      color: white;
-      text-decoration: none;
-      border-radius: 6px;
-      font-weight: bold;
-      transition: background 0.3s;
-    }
-
-    a.button:hover {
-      background: #218838;
-    }
-
-    /* Search bar */
-    form.search-bar {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    form.search-bar input[type="text"] {
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      flex: 1;
-    }
-
-    form.search-bar button {
-      padding: 10px 16px;
-      border-radius: 8px;
-      border: none;
-      background: #5563DE;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    form.search-bar button:hover {
-      background: #3b46b1;
-    }
-
-    form.search-bar a.clear {
-      padding: 8px 12px;
-      background: #dc3545;
-      color: white;
-      text-decoration: none;
-      border-radius: 6px;
-      font-weight: bold;
-      transition: background 0.3s;
-    }
-
-    form.search-bar a.clear:hover {
-      background: #c82333;
-    }
-
-    /* Table styles */
-    table {
+    .sidebar {
       width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      flex-direction: row;
+      justify-content: space-around;
     }
 
-    th, td {
-      padding: 12px 15px;
-      text-align: left;
+    .main-content {
+      padding: 25px;
     }
 
-    th {
-      background: #5563DE;
-      color: white;
+    table {
+      font-size: 13px;
     }
+  }
 
-    tr:nth-child(even) {
-      background: #f8f9fa;
-    }
+  .pagination {
+  margin-top: 25px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 
-    tr:hover {
-      background: #e2e6ea;
-    }
+.page-btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: white;
+  text-decoration: none;
+  font-size: 14px;
+  color: var(--text);
+  transition: 0.2s ease;
+}
 
-    td a.edit {
-      padding: 6px 10px;
-      background: #ffc107;
-      color: #212529;
-      text-decoration: none;
-      border-radius: 6px;
-      font-weight: bold;
-      transition: background 0.3s;
-    }
+.page-btn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
 
-    td a.edit:hover {
-      background: #e0a800;
-    }
+.page-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  font-weight: 600;
+}
 
-    @media (max-width: 768px) {
-      body {
-        flex-direction: column;
-      }
-      .sidebar {
-        width: 100%;
-        flex-direction: row;
-        justify-content: space-around;
-        padding: 20px 0;
-      }
-      .main-content {
-        padding: 20px;
-      }
-      form.search-bar {
-        flex-direction: column;
-        gap: 10px;
-      }
-      table {
-        font-size: 14px;
-      }
-    }
-  </style>
+</style>
+
+
 </head>
 <body>
 
@@ -197,11 +303,6 @@
   <div class="main-content">
     <h2>Products</h2>
 
-    
-    
-   
-
-
     <!-- Search bar -->
     <form class="search-bar" method="GET" action="/inventory-admin/products">
       <input
@@ -210,35 +311,139 @@
         placeholder="Search product..."
         value="<%= search %>"
       />
-      <button type="submit">Search</button>
+      <button type="submit" class="btn btn-primary">
+        🔍 Search
+      </button>
       <% if (search) { %>
-        <a href="/inventory-admin/products" class="clear">Clear</a>
+        <a href="/inventory-admin/products" class="btn btn-danger">
+          Clear
+        </a>
       <% } %>
     </form>
 
     <!-- Products table -->
-    <table>
-      <tr>
-        <th>Name</th>
-        <th>Quantity</th>
-        <th>Supplier</th>
-        <th>Actions</th>
-      </tr>
-
-      <% products.forEach(p => { %>
+    <div class="table-wrapper">
+      <table>
         <tr>
-          <td><%= p.name %></td>
-          <td><%= p.quantity %></td>
-          <td><%= p.supplier %></td>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Quantity</th>
+          <th>Supplier</th>
+          <th>Actions</th>
+        </tr>
+
+        <% products.forEach(p => { %>
+          <tr>
+            <td><%= p.name %></td>
+            <td class="description" title="<%= p.description %>">
+              <%= p.description ? p.description : "—" %>
+            </td>
+            <td><%= p.quantity %></td>
+            <td><%= p.supplier %></td>
+            
+            <td>
+              <a href="/inventory-admin/products/edit/<%= p.id %>" class="btn btn-warning">Edit</a>
+            </td>
+          </tr>
+        <% }) %>
+      </table>
+    </div>
+    <div class="action-bar">
+
+  <button onclick="toggleAddRow()" class="btn btn-success">
+    + Add Row
+  </button>
+
+  <!-- Inline Add Row Form -->
+  <form id="addRowForm" method="POST" action="/inventory-admin/products" style="display:none; margin-top:20px;">
+    <div class="table-wrapper">
+      <table>
+        <tr>
           <td>
-            <a href="/inventory-admin/products/edit/<%= p.id %>" class="edit">Edit</a>
+            <input type="text" name="name" placeholder="Product name" required style="width:100%; padding:8px;">
+          </td>
+          <td>
+            <input type="text" name="description" placeholder="Description" style="width:100%; padding:8px;">
+          </td>
+          <td>
+            <input type="number" name="quantity" placeholder="Qty" required style="width:80px; padding:8px;">
+          </td>
+          <td>
+            <label for="supplierSelect">Supplier:</label>
+            <select name="supplier_id" id="supplierSelect" required style="width:100%;">
+              <option value="" disabled selected>Select Supplier</option>
+
+              <% suppliers.forEach(s => { %>
+                <option value="<%= s.id %>"><%= s.name %></option>
+              <% }) %>
+
+              <option value="add_new">➕ Add New Supplier</option>
+            </select>
+
+
+          </td>
+          <td>
+            <button type="submit" class="btn btn-primary">Save</button>
           </td>
         </tr>
-      <% }) %>
-    </table>
+      </table>
+    </div>
+  </form>
 
-    <a href="/inventory-admin/products/add" class="button">+ Add Product</a>
+
+      <% if (totalPages > 1) { %>
+  <div class="pagination">
+    <% if (currentPage > 1) { %>
+      <a href="?search=<%= search %>&page=<%= currentPage - 1 %>" class="page-btn">
+        ← Prev
+      </a>
+    <% } %>
+
+    <% for (let i = 1; i <= totalPages; i++) { %>
+      <a href="?search=<%= search %>&page=<%= i %>" class="page-btn <%= currentPage === i ? 'active' : '' %>">
+        <%= i %>
+      </a>
+    <% } %>
+
+    <% if (currentPage < totalPages) { %>
+      <a href="?search=<%= search %>&page=<%= currentPage + 1 %>" class="page-btn">
+        Next →
+      </a>
+    <% } %>
+  </div>
+<% } %>
+
+    </div>
   </div>
 
+<script>
+function toggleAddRow() {
+  const form = document.getElementById("addRowForm");
+  form.style.display = form.style.display === "none" ? "block" : "none";
+}
+
+ document.getElementById("supplierSelect").addEventListener("change", function () {
+    if (this.value === "add_new") {
+      window.location.href = "/inventory-admin/suppliers/add";
+    }
+  });
+
+  $(document).ready(function() {
+  $('#supplierSelect').select2({
+    placeholder: "Select Supplier",
+    allowClear: true,
+    width: 'resolve'
+  });
+
+  // Handle "Add New Supplier"
+  $('#supplierSelect').on('select2:select', function(e) {
+    if (e.params.data.id === 'add_new') {
+      window.location.href = '/inventory-admin/suppliers/add';
+    }
+  });
+});
+</script>
+
+ 
 </body>
 </html>
